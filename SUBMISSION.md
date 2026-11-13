@@ -4,7 +4,7 @@
 
 - **Name:** Dinesh R
 - **Assignment chosen:** A – Data
-- **Time spent:** 5 hours 30 min
+- **Time spent:** 11 hours
 - **GitHub repository:** https://github.com/dineshr27-dot/interaction-ledger-pipeline
 
 ## How to Run
