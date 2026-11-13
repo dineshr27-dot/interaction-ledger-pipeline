@@ -4,7 +4,7 @@
 
 - **Name:** Dinesh R
 - **Assignment chosen:** A – Data
-- **Time spent:** [Enter your honest estimated hours]
+- **Time spent:** 5 hours 30 min
 - **GitHub repository:** https://github.com/dineshr27-dot/interaction-ledger-pipeline
 
 ## How to Run
@@ -81,7 +81,7 @@ The SQLite database contains three main tables:
 
 An additional **`ingested_event_files`** table tracks event-file processing and data quality counters.
 
-Phone numbers are encrypted at rest, while HMAC hashes are used for deterministic matching without storing plaintext phone numbers as the lookup key.
+Phone numbers are encrypted at rest using Fernet, while HMAC-SHA256 hashes are used for deterministic matching without storing plaintext phone numbers as the lookup key.
 
 ## Decisions and Assumptions
 
@@ -110,7 +110,7 @@ Phone numbers are encrypted at rest, while HMAC hashes are used for deterministi
 
 ### Known Limitations
 
-- There are 461 orphan events remaining after both data drops have been processed. These are retained as unlinked events.
+- There are **461 orphan events** remaining after both data drops have been processed. These are retained as unlinked events.
 - Rejection and field-warning report information is reconstructed from the original CSV files, so those source files must remain available when generating reports.
 - Automated recovery from every possible process crash has not been fully tested.
 - Large-scale performance beyond the supplied small dataset has not been benchmarked.
@@ -121,12 +121,17 @@ The following tests and checks were performed:
 
 - 18 validation tests passed.
 - 1 event-linking test passed.
-- Full test suite: **19 passed**.
+- Full test suite: **19 passed, 0 failed**.
+- Tests were executed using Python 3.11.0 in a `.venv` virtual environment.
 - Event ingestion idempotency verified.
-- Lead ingestion idempotency verified for both drops.
-- CLI help commands verified.
+- Lead ingestion idempotency verified for both drops in earlier testing.
+- CLI help command verified.
 - Custom report output directory tested.
-- All five required reports generated and checked.
+- Both data drops successfully ingested in the final local verification.
+- SQLite database initialization verified.
+- Fernet and HMAC encryption keys successfully created.
+- `.gitignore` verified to exclude virtual environments, encryption keys, database files, and generated data.
+- All five required reports successfully generated and checked.
 
 ### Verified Results
 
@@ -144,7 +149,7 @@ The following tests and checks were performed:
 | Unknown disposition events | 21 |
 | Remaining orphan events | 461 |
 
-The difference between total input events and stored events accounts for duplicate events, malformed events, and events with unknown disposition codes that are counted and ignored.
+The difference between total input events and stored events is 264. This corresponds to 235 duplicate events, 8 malformed events, and 21 events with unknown disposition codes that were counted and ignored.
 
 ## Results
 
@@ -154,9 +159,10 @@ The final database contains:
 
 - 1,892 unique leads.
 - 8,481 stored events.
+- 2,536 calls in the generated report.
 - 461 remaining orphan events.
 
-The reporting pipeline generates the following five reports:
+The reporting pipeline successfully generated the following five reports:
 
 1. `batch_summary.csv`
 2. `daily_overview.csv`
